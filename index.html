@@ -1,23 +1,9 @@
-import os
-import base64
-
-def get_b64(path):
-    if os.path.exists(path):
-        with open(path, 'rb') as f:
-            return base64.b64encode(f.read()).decode('utf-8')
-    return ""
-
-img_b64 = get_b64('WhatsApp Image 2026-08-03 at 8.11.54 AM.jpeg')
-logo_b64 = get_b64('logo.png')
-
-SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxK647p8QPQ7sIIKO8NkUI8XxUVvIo32lIW0wJcPAUObFyqLO-1_9NPfWl03naLTpEWgA/exec"
-
-app_gsheets_html = f"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تطبيق تشييك المعدات الطبية - مستشفى بدية (ربط أونلاين مباشر)</title>
+<title>تطبيق تشييك المعدات الطبية - مستشفى بدية</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
     :root {{
@@ -61,7 +47,7 @@ app_gsheets_html = f"""<!DOCTYPE html>
         gap: 15px;
     }}
 
-    .logo-container img {{
+    .-container img {{
         height: 65px;
         width: auto;
     }}
@@ -301,7 +287,6 @@ app_gsheets_html = f"""<!DOCTYPE html>
         <!-- Status Indicator -->
         <div class="cloud-status-badge">
             <span>☁️</span>
-            <span>التطبيق مرتبط أونلاين بجدول Google Sheets مباشرة. سيتم الحفظ أوتوماتيكياً في شيت المستشفى المعتمد.</span>
         </div>
 
         <div class="grid-layout">
