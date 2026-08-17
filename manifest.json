@@ -1,6 +1,6 @@
 {
   "name": "تطبيق تشييك المعدات - مستشفى بدية",
-  "short_name": "تشييك بدية",
+  "short_name": "تشييك الادوات",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
