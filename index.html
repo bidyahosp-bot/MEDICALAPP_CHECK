@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>تطبيق تشييك المعدات الطبية - مستشفى بدية</title>
 
 <!-- إعدادات PWA وتثبيت التطبيق -->
@@ -30,12 +30,17 @@
         font-family: 'Tajawal', sans-serif;
         margin: 0;
         padding: 0;
+        -webkit-tap-highlight-color: transparent;
     }
 
     body {
         background-color: var(--bg-color);
         color: var(--text-main);
         padding-bottom: 40px;
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        font-size: 16px;
+        line-height: 1.5;
     }
 
     /* شريط تثبيت التطبيق */
@@ -52,16 +57,19 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         justify-content: space-between;
         align-items: center;
+        gap: 10px;
     }
 
     .pwa-install-btn {
         background: white;
         color: #e65100;
         border: none;
-        padding: 6px 15px;
+        padding: 8px 20px;
         border-radius: 20px;
         font-weight: 800;
         cursor: pointer;
+        touch-action: manipulation;
+        white-space: nowrap;
     }
 
     .app-header {
@@ -86,17 +94,20 @@
         height: 65px;
         width: auto;
         object-fit: contain;
+        max-width: 100%;
     }
 
     .hospital-info {
         text-align: center;
         flex-grow: 1;
+        min-width: 200px;
     }
 
     .hospital-info h1 {
         color: var(--primary);
         font-size: 1.8rem;
         font-weight: 800;
+        margin-bottom: 2px;
     }
 
     .hospital-info h2 {
@@ -196,6 +207,7 @@
         outline: none;
         transition: border-color 0.2s;
         width: 100%;
+        touch-action: manipulation;
     }
 
     .table-responsive {
@@ -208,7 +220,7 @@
         width: 100%;
         border-collapse: collapse;
         margin-top: 10px;
-        min-width: 500px;
+        min-width: 600px; /* زيادة للسماح بالتمرير الأفقي على الجوال */
     }
 
     .checklist-table th, .checklist-table td {
@@ -235,6 +247,7 @@
         border-radius: 4px;
         font-weight: bold;
         width: 100%;
+        touch-action: manipulation;
     }
 
     .btn-submit {
@@ -253,6 +266,7 @@
         justify-content: center;
         align-items: center;
         gap: 10px;
+        touch-action: manipulation;
     }
 
     .btn-submit:hover {
@@ -290,6 +304,7 @@
         100% { transform: rotate(360deg); }
     }
 
+    /* تحسينات الشاشات المتوسطة */
     @media (max-width: 850px) {
         .grid-layout {
             grid-template-columns: 1fr;
@@ -306,6 +321,98 @@
         }
         .card {
             padding: 15px;
+        }
+    }
+
+    /* تحسينات خاصة للهواتف الصغيرة */
+    @media (max-width: 600px) {
+        body {
+            font-size: 14px;
+            padding-bottom: 20px;
+        }
+
+        .app-header {
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .logo-container img {
+            height: 50px;
+        }
+
+        .hospital-info h1 {
+            font-size: 1.3rem;
+        }
+        .hospital-info h2 {
+            font-size: 0.9rem;
+        }
+
+        .card {
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .form-group input, .form-group select {
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+
+        .equipment-sidebar {
+            padding: 10px;
+        }
+
+        .equipment-img-container img {
+            max-height: 150px;
+            width: auto;
+        }
+
+        .checklist-table th, .checklist-table td {
+            padding: 6px;
+            font-size: 0.8rem;
+        }
+
+        .checklist-table input, .checklist-table select {
+            font-size: 0.8rem;
+        }
+
+        .btn-submit {
+            padding: 12px 20px;
+            font-size: 1rem;
+        }
+
+        .pwa-install-banner {
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .pwa-install-btn {
+            width: 100%;
+            padding: 10px;
+        }
+    }
+
+    /* للشاشات الصغيرة جداً (أقل من 400px) */
+    @media (max-width: 400px) {
+        .hospital-info h1 {
+            font-size: 1.1rem;
+        }
+        .hospital-info h2 {
+            font-size: 0.8rem;
+        }
+        .card-title {
+            font-size: 0.9rem;
         }
     }
 </style>
@@ -333,7 +440,7 @@
     <div class="container">
 
         <div class="grid-layout">
-            
+
             <div class="equipment-sidebar">
                 <h3>📷 دليل صور المعدات المرفق</h3>
                 <div class="equipment-img-container">
@@ -461,7 +568,7 @@
                     <div class="card" id="recordsCard">
                         <div class="card-title" style="justify-content: space-between;">
                             <span>📋 عرض بيانات التسجيل الحديثة</span>
-                            <button type="button" onclick="loadRecordsFromSheets()" style="background: var(--secondary); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🔄 تحديث البيانات</button>
+                            <button type="button" onclick="loadRecordsFromSheets()" style="background: var(--secondary); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; cursor: pointer; touch-action: manipulation;">🔄 تحديث البيانات</button>
                         </div>
                         <div class="table-responsive">
                             <table class="checklist-table">
@@ -563,7 +670,7 @@
         function loadRecordsFromSheets() {
             const body = document.getElementById('recordsBody');
             body.innerHTML = '<tr><td colspan="5" style="color: #0d47a1;">⏳ جاري جلب أحدث بيانات التسجيل...</td></tr>';
-            
+
             fetch(SCRIPT_URL + '?action=read')
             .then(res => res.json())
             .then(data => {
