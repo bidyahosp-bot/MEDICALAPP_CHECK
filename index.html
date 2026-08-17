@@ -416,6 +416,32 @@
                             <span>حفظ التشييك</span>
                         </button>
                     </div>
+
+                    <!-- Section 3: Registered Data Display -->
+                    <div class="card" id="recordsCard">
+                        <div class="card-title" style="justify-content: space-between;">
+                            <span>📋 عرض بيانات التسجيل الحديثة</span>
+                            <button type="button" onclick="loadRecordsFromSheets()" style="background: var(--secondary); color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; cursor: pointer;">🔄 تحديث البيانات</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="checklist-table">
+                                <thead>
+                                    <tr>
+                                        <th>التاريخ</th>
+                                        <th>الموظف</th>
+                                        <th>العيادة</th>
+                                        <th>الشفت</th>
+                                        <th>حالة التشييك</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recordsBody">
+                                    <tr>
+                                        <td colspan="5" style="color: #666; padding: 15px;">لا توجد سجلات معروضة حالياً. اضغطي على "تحديث البيانات" أو أضيفي تسجيل جديد.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -457,6 +483,12 @@
                 body: formData
             })
             .then(res => {
+                addRecordToTable({
+                    date: document.getElementById('checkDate').value,
+                    staff: document.getElementById('staffName').value,
+                    clinic: document.getElementById('clinicName').value,
+                    shift: document.getElementById('shiftType').value
+                });
                 alert('✅ تم حفظ التشييك بنجاح في Google Sheets!');
                 document.getElementById('checklistForm').reset();
                 document.getElementById('checkDate').valueAsDate = new Date();
@@ -469,6 +501,51 @@
             .finally(() => {
                 btn.disabled = false;
                 loader.style.display = 'none';
+            });
+        }
+
+        function addRecordToTable(data) {
+            const body = document.getElementById('recordsBody');
+            if (body.children.length === 1 && body.children[0].children[0].hasAttribute('colspan')) {
+                body.innerHTML = '';
+            }
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${data.date}</td>
+                <td><strong>${data.staff}</strong></td>
+                <td>${data.clinic}</td>
+                <td>${data.shift}</td>
+                <td><span style="color: #2e7d32; font-weight: bold;">✅ تم التشييك والحفظ</span></td>
+            `;
+            body.prepend(row);
+        }
+
+        function loadRecordsFromSheets() {
+            const body = document.getElementById('recordsBody');
+            body.innerHTML = '<tr><td colspan="5" style="color: #0d47a1;">⏳ جاري جلب أحدث بيانات التسجيل...</td></tr>';
+            
+            fetch(SCRIPT_URL + '?action=read')
+            .then(res => res.json())
+            .then(data => {
+                if(data && data.length > 0) {
+                    body.innerHTML = '';
+                    data.reverse().forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.date || '-'}</td>
+                            <td><strong>${item.staff || '-'}</strong></td>
+                            <td>${item.clinic || '-'}</td>
+                            <td>${item.shift || '-'}</td>
+                            <td><span style="color: #2e7d32; font-weight: bold;">✅ موثق</span></td>
+                        `;
+                        body.appendChild(row);
+                    });
+                } else {
+                    body.innerHTML = '<tr><td colspan="5">لم يتم العثور على سجلات سابقة.</td></tr>';
+                }
+            })
+            .catch(() => {
+                body.innerHTML = '<tr><td colspan="5" style="color: #c62828;">تعذر جلب البيانات أونلاين. يرجى التأكد من صلاحيات App Script.</td></tr>';
             });
         }
     </script>
