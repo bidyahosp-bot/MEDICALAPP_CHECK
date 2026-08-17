@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تطبيق تشييك المعدات الطبية - مستشفى بدية</title>
+
+<!-- إعدادات PWA وتثبيت التطبيق -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b71c1c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="تشييك بدية">
+<link rel="apple-touch-icon" href="logo.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -27,6 +36,32 @@
         background-color: var(--bg-color);
         color: var(--text-main);
         padding-bottom: 40px;
+    }
+
+    /* شريط تثبيت التطبيق */
+    .pwa-install-banner {
+        display: none;
+        background: #e65100;
+        color: white;
+        padding: 12px 15px;
+        text-align: center;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        z-index: 9999;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .pwa-install-btn {
+        background: white;
+        color: #e65100;
+        border: none;
+        padding: 6px 15px;
+        border-radius: 20px;
+        font-weight: 800;
+        cursor: pointer;
     }
 
     .app-header {
@@ -277,6 +312,12 @@
 </head>
 <body>
 
+    <!-- شريط تنبيه التثبيت -->
+    <div id="pwaBanner" class="pwa-install-banner">
+        <span>📱 هل تريد تثبيت تطبيق مستشفى بدية على هاتفك؟</span>
+        <button id="installBtn" class="pwa-install-btn">تثبيت الآن</button>
+    </div>
+
     <header class="app-header">
         <div class="header-content">
             <div class="logo-container">
@@ -417,7 +458,6 @@
                         </button>
                     </div>
 
-                    <!-- Section 3: Registered Data Display -->
                     <div class="card" id="recordsCard">
                         <div class="card-title" style="justify-content: space-between;">
                             <span>📋 عرض بيانات التسجيل الحديثة</span>
@@ -548,6 +588,31 @@
                 body.innerHTML = '<tr><td colspan="5" style="color: #c62828;">تعذر جلب البيانات أونلاين. يرجى التأكد من صلاحيات App Script.</td></tr>';
             });
         }
+
+        // البرمجة الخاصة بتثبيت التطبيق PWA
+        let deferredPrompt;
+        const pwaBanner = document.getElementById('pwaBanner');
+        const installBtn = document.getElementById('installBtn');
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            pwaBanner.style.display = 'flex';
+        });
+
+        installBtn.addEventListener('click', () => {
+            pwaBanner.style.display = 'none';
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                });
+            }
+        });
     </script>
 </body>
 </html>
